@@ -50,13 +50,19 @@ with mp_pose.Pose(min_detection_confidence=0.4, min_tracking_confidence=0.4) as 
         try:
             landmarks = results.pose_landmarks.landmark
             
-            (hip, knee, ankle) = (23, 25, 27) if (landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].z < landmarks[mp_pose.PoseLandmark.RIGHT_KNEE.value].z) else (24, 26, 28)
-            hip_coord = [landmarks[hip].x, landmarks[hip].y]
-            knee_coord = [landmarks[knee].x, landmarks[knee].y]
-            ankle_coord = [landmarks[ankle].x, landmarks[ankle].y]
-            angle_at_knee = calculate_angle(hip_coord, knee_coord, ankle_coord)
-            image = cv2.putText(image,"Knee Angle:" + str(angle_at_knee), (int(landmarks[knee].x * 640), int(landmarks[knee].y * 480)),
-                                cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2, cv2.LINE_AA)
+            (hip_left, knee_left, ankle_left) = (23, 25, 27) 
+            hip_coord_left = [landmarks[hip_left].x, landmarks[hip_left].y]
+            knee_coord_left = [landmarks[knee_left].x, landmarks[knee_left].y]
+            ankle_coord_left = [landmarks[ankle_left].x, landmarks[ankle_left].y]
+            angle_at_knee_left = calculate_angle(hip_coord_left, knee_coord_left, ankle_coord_left)
+
+            (hip_right, knee_right, ankle_right) = (24, 26, 28) 
+            hip_coord_right = [landmarks[hip_right].x, landmarks[hip_right].y]
+            knee_coord_right = [landmarks[knee_right].x, landmarks[knee_right].y]
+            ankle_coord_right = [landmarks[ankle_right].x, landmarks[ankle_right].y]
+            angle_at_knee_right = calculate_angle(hip_coord_right, knee_coord_right, ankle_coord_right)
+            #image = cv2.putText(image,"Knee Angle:" + str(angle_at_knee), (int(landmarks[knee].x * 640), int(landmarks[knee].y * 480)),
+            #                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2, cv2.LINE_AA)
             
             if angle_at_knee > angle_at_knee_thresh:
                 if time_diff < time_thresh:
