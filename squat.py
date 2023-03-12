@@ -19,7 +19,7 @@ def calculate_angle(a,b,c):
 
 cap = cv2.VideoCapture(0) #"KneeBend.mp4"
 angle_at_knee_thresh = 90
-time_thresh = 5
+time_thresh = 2
 time_diff = 0
 knee_bent = False
 rep_counted = False
@@ -59,7 +59,7 @@ with mp_pose.Pose(min_detection_confidence=0.4, min_tracking_confidence=0.4) as 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2, cv2.LINE_AA)
             
             if angle_at_knee > angle_at_knee_thresh:
-                if time_diff < 8:
+                if time_diff < time_thresh:
                     image = cv2.putText(image, "Keep Your Knee bent", (20, 70),
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2, cv2.LINE_AA)
                 knee_bent = False
