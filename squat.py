@@ -18,8 +18,9 @@ def calculate_angle(a,b,c):
 
 
 cap = cv2.VideoCapture(0) #"KneeBend.mp4"
-angle_at_knee_thresh = 90
-time_thresh = 2
+angle_at_knee_max = 90
+angle_at_ankle_max = 65
+time_max = .5
 time_diff = 0
 knee_bent = False
 rep_counted = False
@@ -50,27 +51,34 @@ with mp_pose.Pose(min_detection_confidence=0.4, min_tracking_confidence=0.4) as 
         try:
             landmarks = results.pose_landmarks.landmark
             
-            (hip_left, knee_left, ankle_left) = (23, 25, 27) 
+            (hip_left, knee_left, ankle_left, shoulder_left) = (23, 25, 27, 11) 
             hip_coord_left = [landmarks[hip_left].x, landmarks[hip_left].y]
             knee_coord_left = [landmarks[knee_left].x, landmarks[knee_left].y]
             ankle_coord_left = [landmarks[ankle_left].x, landmarks[ankle_left].y]
+            shoulder_coord_left = [landmarks[shoulder_left].x, landmarks[shoulder_left].y]
             angle_at_knee_left = calculate_angle(hip_coord_left, knee_coord_left, ankle_coord_left)
+            angle_at_ankle_left = calculate_angle(knee_coord_left, ankle_coord_left, shoulder_coord_left)
 
-            (hip_right, knee_right, ankle_right) = (24, 26, 28) 
+            (hip_right, knee_right, ankle_right, shoulder_right) = (24, 26, 28, 12) 
             hip_coord_right = [landmarks[hip_right].x, landmarks[hip_right].y]
             knee_coord_right = [landmarks[knee_right].x, landmarks[knee_right].y]
             ankle_coord_right = [landmarks[ankle_right].x, landmarks[ankle_right].y]
+            shoulder_coord_right = [landmarks[shoulder_right].x, landmarks[shoulder_right].y]
             angle_at_knee_right = calculate_angle(hip_coord_right, knee_coord_right, ankle_coord_right)
+            angle_at_ankle_right = calculate_angle(knee_coord_right, ankle_coord_right, shoulder_coord_right)
+
+            angle_at_ankle = (angle_at_ankle_left + angle_at_ankle_right)/2
+
             #image = cv2.putText(image,"Knee Angle:" + str(angle_at_knee), (int(landmarks[knee].x * 640), int(landmarks[knee].y * 480)),
             #                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2, cv2.LINE_AA)
             
-            if angle_at_knee > angle_at_knee_thresh:
-                if time_diff < time_thresh:
+            if angle_at_knee_left > angle_at_knee_max or angle_at_knee_right > angle_at_knee_max or angle_at_ankle > angle_at_ankle_max:
+                if time_diff < time_max:
                     image = cv2.putText(image, "Keep Your Knee bent", (20, 70),
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2, cv2.LINE_AA)
                 knee_bent = False
             
-            if angle_at_knee < angle_at_knee_thresh and knee_bent==False:
+            if angle_at_knee_left <= angle_at_knee_max and angle_at_knee_left <= angle_at_knee_max and angle_at_ankle <= angle_at_ankle_max and knee_bent==False:
                 knee_bent = True
                 rep_counted = False
                 now = datetime.datetime.now()
@@ -80,7 +88,7 @@ with mp_pose.Pose(min_detection_confidence=0.4, min_tracking_confidence=0.4) as 
                 image = cv2.putText(image,"Time held:" + str(time_diff), (20, 30),
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2, cv2.LINE_AA)
                 
-            if time_diff > time_thresh and rep_counted==False:
+            if time_diff > time_max and rep_counted==False:
                 rep_count += 1
                 rep_counted = True
         except:
