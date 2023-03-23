@@ -103,7 +103,7 @@ with mp_pose.Pose(min_detection_confidence=0.4, min_tracking_confidence=0.4) as 
                     wrist_number = -1
                     image = cv2.putText(image,"FINISHED !!!" + str(time_diff), (30, 40),
                                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2, cv2.LINE_AA)
-            
+
             except:
                 pass
 
