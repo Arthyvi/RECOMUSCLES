@@ -18,9 +18,10 @@ def calculate_angle(a,b,c):
     return angle
 
 
-cap = cv2.VideoCapture(0) #"KneeBend.mp4"
-angle_at_knee_thresh = 90
-time_thresh = 2
+cap = cv2.VideoCapture(0) # 0 for default camera
+angle_at_knee_max = 90
+angle_at_hip_max = 65
+time_max = .5
 time_diff = 0
 knee_bent = False
 rep_counted = False
@@ -99,6 +100,7 @@ with mp_pose.Pose(min_detection_confidence=0.4, min_tracking_confidence=0.4) as 
             image = cv2.putText(image,"Return to menu", (200, 400),
                             cv2.FONT_HERSHEY_SIMPLEX, 1, (0,125,255), 3, cv2.LINE_AA)
             cv2.rectangle(image, pt1=(170,370), pt2=(500,410), color=(0,125,255), thickness=3)
+
 
 
         #Render detections
