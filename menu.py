@@ -1,8 +1,8 @@
 import cv2
 import mediapipe as mp
 #import subprocess
-import squat
 import biceps
+import sskouatent
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_holistic = mp.solutions.holistic
@@ -18,8 +18,8 @@ def on_mouse_click(event, x, y, flags, param):
             print("SQUAT")
             #subprocess.run(["python", "squat.py"])
             cv2.destroyWindow("MENU")
-            squat.main()
-        if 420 < x < 440 and 65 < y < 115:
+            sskouatent.main()
+        if 420 < x < 540 and 65 < y < 115:
             print("CURLS")
             #subprocess.run(["python", "biceps.py"])
             cv2.destroyWindow("MENU")
@@ -36,7 +36,7 @@ def calculer_centre(image, text, pos):
     # Définir la police et la taille du texte
     font = cv2.FONT_HERSHEY_SIMPLEX
     font_scale = 1
-    font_color = (0, 255, 255)  # blanc
+    font_color = (0, 125, 255)  # blanc
     line_type = 2
 
     # Calculer la taille du texte
@@ -91,7 +91,7 @@ def main():
             text_x, text_y, font, font_scale, font_color, line_type = calculer_centre(image, "MENU", 2)
 
             # texte
-            cv2.putText(image, "MENU", (text_x, 20),
+            cv2.putText(image, "MENU", (text_x, 50),
                         font, font_scale, font_color, line_type)	
             
             # bouton squat
@@ -100,14 +100,15 @@ def main():
                         font, font_scale, font_color, line_type)
             x1_rect_squat, x2_rect_squat= text_x-10, text_x + 110
             y1_rect, y2_rect= 65, 115
-            cv2.rectangle(image, (x1_rect_squat, y1_rect), (x2_rect_squat, y2_rect), (0, 255, 255), 2)
+            cv2.rectangle(image, (x1_rect_squat, y1_rect), (x2_rect_squat, y2_rect), font_color, 2)
             
             # bouton curls
             text_x, text_y, font, font_scale, font_color, line_type = calculer_centre(image, "CURLS", 4/3)
             cv2.putText(image, "CURLS", (text_x, 100),
                         font, font_scale, font_color, line_type)
             x1_rect_curls, x2_rect_curls= text_x-10, text_x + 110
-            cv2.rectangle(image, (x1_rect_curls, y1_rect), (x2_rect_curls, y2_rect), (0, 255, 255), 2)
+            cv2.rectangle(image, (x1_rect_curls, y1_rect),
+                          (x2_rect_curls, y2_rect), font_color, 2)
 
             # Flip the image horizontally for a selfie-view display.
             cv2.imshow('MENU', image)
@@ -118,9 +119,9 @@ def main():
             if cv2.waitKey(10) & 0xFF == ord('q'):
                 break
 
-    cap.release()
-    cv2.destroyAllWindows()
-
+    
+        cap.release()
+        cv2.destroyAllWindows()
 
 main()
 

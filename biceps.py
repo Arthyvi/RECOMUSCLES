@@ -4,9 +4,21 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import datetime
+import menu
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
 
+
+def on_click(event, x, y, flags, param):
+    if event == cv2.EVENT_LBUTTONDOWN:
+
+        print("x = ", x)
+        print("y = ", y)
+
+        if 170 < x < 500 and 370 < y < 410:
+            print("MENU")
+            cv2.destroyWindow("CURLS")
+            menu.main()
 
 #Function to calculate angle between a joint.
 def calculate_angle(a,b,c):
@@ -134,10 +146,13 @@ def main():
                                         color=(245, 66, 230), thickness=2, circle_radius=2)
                                     )
 
-            cv2.imshow('Mediapipe Feed', image)
+            cv2.imshow('CURLS', image)
+
+            # Définir la fonction de rappel pour le clic de souris
+            cv2.setMouseCallback("CURLS", on_click)
 
             if cv2.waitKey(10) & 0xFF == ord('q'):
                 break
 
     cap.release()
-    cv2.destroyAllWindows()
+    cv2.destroyWindow('CURLS')
