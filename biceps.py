@@ -16,6 +16,7 @@ def calculate_angle(a,b,c):
 
     radians = np.arctan2(c[1]-b[1], c[0]-b[0]) - np.arctan2(a[1]-b[1], a[0]-b[0])
     angle = np.abs(radians*180.0/np.pi)
+    angle = round(angle)
     return angle
 
 
@@ -27,6 +28,7 @@ arm_bent = False
 rep_counted = False
 rep_count = 0
 now = 0
+finished = 0
 
 shoulder_number = 12
 #right_shoulder =11
@@ -58,7 +60,7 @@ with mp_pose.Pose(min_detection_confidence=0.4, min_tracking_confidence=0.4) as 
 
 
         # Extract landmarks
-        if rep_count <= 6:
+        if finished == 0:
             try:
                 landmarks = results.pose_landmarks.landmark
 
@@ -68,12 +70,16 @@ with mp_pose.Pose(min_detection_confidence=0.4, min_tracking_confidence=0.4) as 
                 wrist_coord = [landmarks[wrist].x, landmarks[wrist].y]
                 angle_at_elbow = calculate_angle(shoulder_coord, elbow_coord, wrist_coord)
                 image = cv2.putText(image,"Elbow Angle:" + str(angle_at_elbow), (int(landmarks[elbow].x * 640), int(landmarks[elbow].y * 480)),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2, cv2.LINE_AA)
+                                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0,125,255), 2, cv2.LINE_AA)
+
+                if rep_count < 3:
+                     image = cv2.putText(image, "LEFT ARM", (20, 70),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0,125,255), 2, cv2.LINE_AA)
+                if rep_count >= 3 and rep_count < 6:
+                     image = cv2.putText(image, "RIGHT ARM", (20, 70),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0,125,255), 2, cv2.LINE_AA)
 
                 if angle_at_elbow > angle_at_elbow_thresh:
-                    if time_diff < time_thresh:
-                        image = cv2.putText(image, "Keep Your Arm bent", (20, 70),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2, cv2.LINE_AA)
                     arm_bent = False
 
                 if angle_at_elbow < angle_at_elbow_thresh and arm_bent==False:
@@ -83,8 +89,9 @@ with mp_pose.Pose(min_detection_confidence=0.4, min_tracking_confidence=0.4) as 
 
                 if arm_bent:
                     time_diff = (datetime.datetime.now() - now).total_seconds()
-                    image = cv2.putText(image,"Time held:" + str(time_diff), (20, 30),
-                                cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2, cv2.LINE_AA)
+                    time_diff = round(time_diff,1)
+                    image = cv2.putText(image,"Time held:" + str(time_diff), (20, 100),
+                                cv2.FONT_HERSHEY_SIMPLEX, 1, (0,125,255), 2, cv2.LINE_AA)
 
                 if time_diff > time_thresh and rep_counted==False:
                     rep_count += 1
@@ -94,21 +101,29 @@ with mp_pose.Pose(min_detection_confidence=0.4, min_tracking_confidence=0.4) as 
                     shoulder_number = 11
                     elbow_number = 13
                     wrist_number = 15
-                    image = cv2.putText(image,"Change arm !" + str(time_diff), (30, 40),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2, cv2.LINE_AA)
 
                 if rep_count == 6:
                     shoulder_number = -1
                     elbow_number = -1
                     wrist_number = -1
-                    image = cv2.putText(image,"FINISHED !!!" + str(time_diff), (30, 40),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2, cv2.LINE_AA)
+                    finished = 1
+
+                image = cv2.putText(image,"Rep count:" + str(rep_count), (20, 460),
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0,125,255), 3, cv2.LINE_AA)
 
             except:
                 pass
 
-        image = cv2.putText(image,"Rep count:" + str(rep_count), (20, 460),
-                                cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2, cv2.LINE_AA)
+
+        if finished == 1:
+            image = cv2.putText(image, "FINISHED", (200, 200),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 2, (0,125,255), 3, cv2.LINE_AA)
+            image = cv2.putText(image,"Return to menu", (200, 400),
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0,125,255), 3, cv2.LINE_AA)
+            cv2.rectangle(image, pt1=(170,370), pt2=(500,410), color=(0,125,255), thickness=3)
+
+
+
 
         #Render detections
         mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
