@@ -13,7 +13,7 @@ def on_click(event, x, y, flags, param):
         print("x = ", x)
         print("y = ", y)
 
-        if 170 < x < 500 and 370 < y < 410:
+        if 170 < x < 500 and 230 < y < 270:
             print("MENU")
             cv2.destroyWindow("SQUAT")
             menu.main()
@@ -34,7 +34,7 @@ def calculate_angle(a, b, c):
 
 def main():
 
-    cap = cv2.VideoCapture(0)  # 0 for default camera
+    cap = cv2.VideoCapture('squat_video_1.mp4')  # 0 for default camera
     angle_at_knee_max = 90
     angle_at_hip_max = 65
     time_max = .5
@@ -108,7 +108,7 @@ def main():
                     if angle_at_knee_left > angle_at_knee_max or angle_at_knee_right > angle_at_knee_max or angle_at_hip > angle_at_hip_max:
                         if time_diff < time_max:
                             image = cv2.putText(image, "Keep Your Knee bent", (20, 70),
-                                                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+                                                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 125, 255), 2, cv2.LINE_AA)
                         knee_bent = False
 
                     if angle_at_knee_left <= angle_at_knee_max and angle_at_knee_left <= angle_at_knee_max and angle_at_hip <= angle_at_hip_max and knee_bent == False:
@@ -120,7 +120,7 @@ def main():
                         time_diff = (datetime.datetime.now() -
                                      now).total_seconds()
                         image = cv2.putText(image, "Time held:" + str(time_diff), (20, 30),
-                                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+                                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 125, 255), 2, cv2.LINE_AA)
 
                     if time_diff > time_max and rep_counted == False:
                         rep_count += 1
@@ -129,7 +129,7 @@ def main():
                     if rep_count == 3:
                         finished = 1
 
-                    image = cv2.putText(image, "Rep count:" + str(rep_count), (20, 460),
+                    image = cv2.putText(image, "Rep count:" + str(rep_count), (20, 260),
                                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 125, 255), 2, cv2.LINE_AA)
 
                 except:
@@ -138,10 +138,10 @@ def main():
             if finished == 1:
                 image = cv2.putText(image, "FINISHED", (200, 200),
                                     cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 125, 255), 3, cv2.LINE_AA)
-                image = cv2.putText(image, "Return to menu", (200, 400),
+                image = cv2.putText(image, "Return to menu", (200, 260),
                                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 125, 255), 3, cv2.LINE_AA)
-                cv2.rectangle(image, pt1=(170, 370), pt2=(
-                    500, 410), color=(0, 125, 255), thickness=3)
+                cv2.rectangle(image, pt1=(170, 230), pt2=(
+                    500, 270), color=(0, 125, 255), thickness=3)
 
             # Render detections
             mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
